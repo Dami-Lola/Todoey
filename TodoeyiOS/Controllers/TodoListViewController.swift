@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
     
@@ -14,13 +15,16 @@ class TodoListViewController: UITableViewController {
     let dataFilePath = FileManager.default.urls(for:
          .documentDirectory, in: .userDomainMask)
          .first?.appendingPathComponent("Items.plist")
+    
+    let context = (UIApplication.shared.delegate as! AppDelegate)
+    .persistentContainer.viewContext
    
     var itemArray = [Item]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
     
-        loadItems()
+//        loadItems()
         // Do any additional setup after loading the view.
     }
     
@@ -70,8 +74,11 @@ class TodoListViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
-            let newItem = Item()
+        
+            
+            let newItem = Item(context: self.context)
             newItem.title = textField.text!
+            newItem.done = false
             self.itemArray.append(newItem)
             self.saveItems()
             
@@ -91,26 +98,18 @@ class TodoListViewController: UITableViewController {
       //MARK:- Model Manipulation Methods
     
     func saveItems(){
-        
-        let encoding = PropertyListEncoder()
-        
-        
-        do{
-            
-            let data = try encoding.encode(itemArray)
-            
-            try data.write(to: dataFilePath!)
-        }
-        
-        catch{
-            
-            print("Error encoding array\(error)")
+
+        do {
+            try context.save()
+        } catch {
+      
+            print("Error saving context\(error)")
         }
         
         self.tableView.reloadData()
     }
     
-    func loadItems(){
+  /*  func loadItems(){
         
         if let data = try? Data(contentsOf: dataFilePath!){
             let decoder = PropertyListDecoder()
@@ -123,5 +122,7 @@ class TodoListViewController: UITableViewController {
             }
         }
     }
+ 
+ */
 }
 
