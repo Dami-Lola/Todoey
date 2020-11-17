@@ -12,10 +12,6 @@ import CoreData
 class TodoListViewController: UITableViewController {
     
     
-    let dataFilePath = FileManager.default.urls(for:
-         .documentDirectory, in: .userDomainMask)
-         .first?.appendingPathComponent("Items.plist")
-    
     let context = (UIApplication.shared.delegate as! AppDelegate)
     .persistentContainer.viewContext
    
@@ -24,7 +20,7 @@ class TodoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
-//        loadItems()
+        loadItems()
         // Do any additional setup after loading the view.
     }
     
@@ -109,20 +105,19 @@ class TodoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-  /*  func loadItems(){
-        
-        if let data = try? Data(contentsOf: dataFilePath!){
-            let decoder = PropertyListDecoder()
-            do{
-                itemArray = try decoder.decode([Item].self, from: data)
-            }
-            
-            catch{
-                print("Error decoding array\(error)")
-            }
+    func loadItems(){
+
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+
+        do{
+            itemArray = try context.fetch(request)
+
+        }
+        catch{
+            print("Error fetching context\(error)")
         }
     }
  
- */
+ 
 }
 
