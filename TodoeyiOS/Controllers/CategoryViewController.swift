@@ -73,6 +73,16 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
     }
     
+    // MARK: - Table view Delegate methods
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "goToItems", sender: self)
+    }
+    
+    
+    
+    
+    
     
     // MARK: - Add categories
     
@@ -108,5 +118,4 @@ class CategoryViewController: UITableViewController {
         
     }
     
-    // MARK: - Table view Delegate methods
 }
