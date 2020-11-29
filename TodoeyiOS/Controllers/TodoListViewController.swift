@@ -105,9 +105,9 @@ class TodoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    func loadItems(){
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()){
         
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
+//        let request: NSFetchRequest<Item> = Item.fetchRequest()
         
         do{
             itemArray = try context.fetch(request)
@@ -117,7 +117,7 @@ class TodoListViewController: UITableViewController {
             print("Error fetching context\(error)")
         }
         
-//        tableView.reloadData()
+        tableView.reloadData()
     }
     
     
@@ -134,25 +134,26 @@ extension TodoListViewController: UISearchBarDelegate{
         
         //to query object using core date NSPredicate
         
-        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        
-        request.predicate = predicate
-        
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+                
         //to sort the data
         
-        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
-        
-        request.sortDescriptors = [sortDescriptor]
-        
-        do{
-            itemArray = try context.fetch(request)
-            
-        }
-        catch{
-            print("Error fetching context\(error)")
-        }
-        
-        tableView.reloadData()
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+    
+        loadItems(with: request)
     }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+                
+        }
+    }
+    
+    
 }
 
