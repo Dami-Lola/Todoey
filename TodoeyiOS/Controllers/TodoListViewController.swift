@@ -12,6 +12,7 @@ import CoreData
 class TodoListViewController: UITableViewController {
     
     
+    
     let context = (UIApplication.shared.delegate as! AppDelegate)
     .persistentContainer.viewContext
    
@@ -20,6 +21,7 @@ class TodoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
+        
         loadItems()
         // Do any additional setup after loading the view.
     }
@@ -51,6 +53,7 @@ class TodoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         
+       
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
         saveItems()
@@ -119,5 +122,19 @@ class TodoListViewController: UITableViewController {
     }
  
  
+}
+
+//MARK:- Search Bar Methods
+
+extension TodoListViewController: UISearchBarDelegate{
+    
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+      // to read from the data, always create a request throguh NSFetchRequest
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        //to query object using core date NSPredicate
+        
+        let predicate = NSPredicate(format: "title CONTAINS %@", searchBar.text!)
+    }
 }
 
