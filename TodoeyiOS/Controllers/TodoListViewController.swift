@@ -14,13 +14,12 @@ class TodoListViewController: UITableViewController {
     
     
     let context = (UIApplication.shared.delegate as! AppDelegate)
-    .persistentContainer.viewContext
-   
+        .persistentContainer.viewContext
+    
     var itemArray = [Item]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
         
         loadItems()
         // Do any additional setup after loading the view.
@@ -33,14 +32,12 @@ class TodoListViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
- 
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         
         let item = itemArray[indexPath.row]
         
-        
-        let items = item.title
-        cell.textLabel?.text = items
+        cell.textLabel?.text = item.title
         
         cell.accessoryType = item.done ? .checkmark : .none
         
@@ -53,7 +50,7 @@ class TodoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         
-       
+        
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
         saveItems()
@@ -73,7 +70,7 @@ class TodoListViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
-        
+            
             
             let newItem = Item(context: self.context)
             newItem.title = textField.text!
@@ -81,7 +78,7 @@ class TodoListViewController: UITableViewController {
             self.itemArray.append(newItem)
             self.saveItems()
             
-        
+            
         }
         
         alert.addTextField { (alertTextField) in
@@ -94,14 +91,14 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-      //MARK:- Model Manipulation Methods
+    //MARK:- Model Manipulation Methods
     
     func saveItems(){
-
+        
         do {
             try context.save()
         } catch {
-      
+            
             print("Error saving context\(error)")
         }
         
@@ -109,19 +106,21 @@ class TodoListViewController: UITableViewController {
     }
     
     func loadItems(){
-
+        
         let request: NSFetchRequest<Item> = Item.fetchRequest()
-
+        
         do{
             itemArray = try context.fetch(request)
-
+            
         }
         catch{
             print("Error fetching context\(error)")
         }
+        
+//        tableView.reloadData()
     }
- 
- 
+    
+    
 }
 
 //MARK:- Search Bar Methods
@@ -129,12 +128,31 @@ class TodoListViewController: UITableViewController {
 extension TodoListViewController: UISearchBarDelegate{
     
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-      // to read from the data, always create a request throguh NSFetchRequest
+        // to read from the data, always create a request throguh NSFetchRequest
         let request: NSFetchRequest<Item> = Item.fetchRequest()
+        print("searchBar.text!")
         
         //to query object using core date NSPredicate
         
-        let predicate = NSPredicate(format: "title CONTAINS %@", searchBar.text!)
+        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        
+        request.predicate = predicate
+        
+        //to sort the data
+        
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+        
+        request.sortDescriptors = [sortDescriptor]
+        
+        do{
+            itemArray = try context.fetch(request)
+            
+        }
+        catch{
+            print("Error fetching context\(error)")
+        }
+        
+        tableView.reloadData()
     }
 }
 
